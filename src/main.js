@@ -2,13 +2,14 @@ import { Start } from './scenes/Start.js';
 
 const config = {
     type: Phaser.AUTO,
-    title: 'CMPM 120 Project Skeleton',
+    title: 'Space Battle 3',
     description: '',
     parent: 'game-container',
     width: 1280,
     height: 720,
     backgroundColor: '#000000',
     pixelArt: false,
+    physics: {deafult: "arcade"},
     scene: [
         Start
     ],
