@@ -7,14 +7,13 @@ export class Enemy extends Phaser.GameObjects.PathFollower {
         scene.physics.add.existing(this);
         this.direction = Phaser.Math.DegToRad(direction);
         this.scene = scene;
-        this.speed = speed;
         this.rotation = this.direction;
         this.attack_rate = attack_rate;
         this.bullet_speed = bullet_speed;
         this.damage = damage;
         this.last_attack = time + Math.random()*this.attack_rate;
         this.startFollow({
-            duration: 5000,
+            duration: speed,
             repeat: -1,
             yoyo: true,
             rotationOffset: 90,

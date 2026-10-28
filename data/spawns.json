@@ -4,21 +4,19 @@
     "name": "The Space Bee",
     "description": "Back from the dead",
     "count": 5,
-    "speed": 100,
-    "attack_rate": 10000,
+    "speed": 5000,
+    "attack_rate": 1500,
     "bullet_speed": 800,
-    "damage": 3,
-    "target": ["player"]
+    "damage": 3
 },
     {
     "sprite": "bat",
     "name": "The Space Bat",
     "description": "Peril from the Past",
-    "count": 10,
-    "speed": 300,
-    "attack_rate": 8000,
-    "bullet_speed": 500,
-    "damage": 5,
-    "target": ["random", "player"]
+    "count": 7,
+    "speed": 2500,
+    "attack_rate": 1500,
+    "bullet_speed": 1000,
+    "damage": 5
 }
 ]

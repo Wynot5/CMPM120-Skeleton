@@ -13,6 +13,7 @@ export class Start extends Phaser.Scene {
 
         this.load.image('laser', 'assets/laser.png');
         this.load.image('bolt', 'assets/bolt.png');
+        this.load.json('spawns', 'data/spawns.json');
 
         this.load.image('bat', 'assets/bat.png');
         this.load.image('bee', 'assets/bee.png');
@@ -24,6 +25,7 @@ export class Start extends Phaser.Scene {
         this.player = this.add.sprite(640, 600, 'alien');
         this.physics.add.existing(this.player);
         this.enemy_group = this.add.group("enemies");
+        this.wave = 0;
 
         this.player.hp = 100;
         this.player.score = 0;
@@ -58,6 +60,32 @@ export class Start extends Phaser.Scene {
         return paths;
     }
 
+    newWave(){
+        const spawns = this.cache.json.get("spawns");
+        console.log(spawns);
+        /* const spawns = {
+            "sprite": "bee",
+            "name": "The Space Bee",
+            "description": "Back from the dead",
+            "count": 5,
+            "speed": 100,
+            "attack_rate": 1500,
+            "bullet_speed": 800,
+            "damage": 3,
+        }*/
+        let idx = (this.wave)%2;
+        const spawn = spawns[idx];
+        for(let i = 0; i < spawn.count; ++i){
+            //const dist = 1500 + i*500 + Math.random()*500;
+            const angle = i * 360/spawn.count + Math.random()*60 - 30;
+            let paths = this.getPath();
+            const e = new Enemy(this, paths[i%2], 1280*(i%2), 30 + i*75, spawn.sprite, angle, spawn.speed, spawn.attack_rate, spawn.bullet_speed, spawn.damage, this.time.now);
+            //Phaser.Math.RotateAround(e, 0, 0, Phaser.Math.DegToRad(angle));
+            this.enemy_group.add(e);
+            this.physics.add.existing(e);
+        }
+    }
+
     update(time) {
         let dt = (time - this.last_time)/1000;
         this.last_time = time;
@@ -83,28 +111,8 @@ export class Start extends Phaser.Scene {
         }
 
         if(this.enemy_group.children.entries.length == 0){
-            //const spawns = this.cache.json.get("spawns");
-            const spawns = {
-                "sprite": "bee",
-                "name": "The Space Bee",
-                "description": "Back from the dead",
-                "count": 5,
-                "speed": 100,
-                "attack_rate": 1500,
-                "bullet_speed": 800,
-                "damage": 3,
-            }
-            //let idx = 0;
-            const spawn = spawns;
-            for(let i = 0; i < spawn.count; ++i){
-                const dist = 1500 + i*500 + Math.random()*500;
-                const angle = i * 360/spawn.count + Math.random()*60 - 30;
-                let paths = this.getPath();
-                const e = new Enemy(this, paths[i%2], 1280*(i%2), 30 + i*75, spawn.sprite, angle, spawn.speed, spawn.attack_rate, spawn.bullet_speed, spawn.damage, this.time.now);
-                //Phaser.Math.RotateAround(e, 0, 0, Phaser.Math.DegToRad(angle));
-                this.enemy_group.add(e);
-                this.physics.add.existing(e);
-            }
+            this.newWave();
+            this.wave++;
         }
         this.score_label.text = "HP: " + this.player.hp + " Score: " +this.player.score;
         this.physics.world.overlap(this.player_bullets, this.enemy_group, (b,e) => {e.destroy(true); b.destroy(true); this.player.score += 100;});
