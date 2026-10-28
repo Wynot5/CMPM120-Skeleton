@@ -11,7 +11,8 @@ export class Start extends Phaser.Scene {
         this.load.image('background', 'assets/bg.png');
         this.load.image('alien', 'assets/alienBlue.png');
 
-        this.load.image('projectile', 'assets/laser.png');
+        this.load.image('laser', 'assets/laser.png');
+        this.load.image('bolt', 'assets/bolt.png');
 
         this.load.image('bat', 'assets/bat.png');
         this.load.image('bee', 'assets/bee.png');
@@ -42,6 +43,17 @@ export class Start extends Phaser.Scene {
         this.space = this.input.keyboard.addKey("SPACE", false, true);
     }
 
+    getPath(){
+        let path1 = this.add.path(0, 0);
+        path1.lineTo(1280, 0);
+
+        let path2 = this.add.path(1280,0);
+        path2.lineTo(0,0);
+
+        let paths = [path1, path2];
+        return paths;
+    }
+
     update(time) {
         let dt = (time - this.last_time)/1000;
         this.last_time = time;
@@ -62,22 +74,30 @@ export class Start extends Phaser.Scene {
         if((this.player.last_attack + this.player.attack_speed < time) && (this.space.isDown) && (this.player_bullets.getLength() < 3)){
             this.player.last_attack = time;
 
-            let bullet = new Bullet(this, this.player.x, this.player.y, this.player.attack_angle, this.player.bullet_speed);
+            let bullet = new Bullet(this, this.player.x, this.player.y, this.player.attack_angle, this.player.bullet_speed, 100, 'laser');
             this.player_bullets.add(bullet);
         }
 
         if(this.enemy_group.children.entries.length == 0){
-            const spawns = this.cache.json.get("spawns");
-            console.log(spawns);
-            let idx = 1;
-            const spawn = spawns[idx];
-            for(let i = 0; i < spawn.count*(Math.log(this.wave)+1); ++i){
+            //const spawns = this.cache.json.get("spawns");
+            const spawns = {
+                "sprite": "bee",
+                "name": "The Space Bee",
+                "description": "Back from the dead",
+                "count": 5,
+                "speed": 100,
+                "attack_rate": 10000,
+                "bullet_speed": 800,
+                "damage": 3,
+            }
+            //let idx = 0;
+            const spawn = spawns;
+            for(let i = 0; i < spawn.count; ++i){
                 const dist = 1500 + i*500 + Math.random()*500;
                 const angle = i * 360/spawn.count + Math.random()*60 - 30;
-                const target = {x: this.game.canvas.width/2, y: this.game.canvas.height/2};
-                const e = new Enemy(this, dist, 0, spawn.sprite, angle, spawn.speed, spawn.attack_rate, spawn.bullet_speed, spawn.damage, target, this.time.now);
-                e.setScale(0.5);
-                Phaser.Math.RotateAround(e, 0, 0, Phaser.Math.DegToRad(angle));
+                let paths = this.getPath();
+                const e = new Enemy(this, paths[i%2], 1280*(i%2), 30 + i*75, spawn.sprite, angle, spawn.speed, spawn.attack_rate, spawn.bullet_speed, spawn.damage, this.time.now);
+                //Phaser.Math.RotateAround(e, 0, 0, Phaser.Math.DegToRad(angle));
                 this.enemy_group.add(e);
             }
         }

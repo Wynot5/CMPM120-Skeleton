@@ -1,6 +1,6 @@
 export class Bullet extends Phaser.GameObjects.Sprite{
-    constructor(scene, x, y, direction, speed, damage){
-        super(scene, x, y, "projectile");
+    constructor(scene, x, y, direction, speed, damage, type){
+        super(scene, x, y, type);
         scene.add.existing(this);
         //scene.physics.add.existing(this);
         this.direction = Phaser.Math.DegToRad(direction);
