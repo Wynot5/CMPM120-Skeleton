@@ -15,7 +15,7 @@
     "description": "Peril from the Past",
     "count": 7,
     "speed": 2500,
-    "attack_rate": 1500,
+    "attack_rate": 1000,
     "bullet_speed": 1000,
     "damage": 5
 }
