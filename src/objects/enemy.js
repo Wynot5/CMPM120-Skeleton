@@ -4,6 +4,7 @@ export class Enemy extends Phaser.GameObjects.PathFollower {
     constructor(scene, path, x, y, type, direction, speed, attack_rate, bullet_speed, damage, time){
         super(scene, path, x, y, type);
         scene.add.existing(this);
+        scene.physics.add.existing(this);
         this.direction = Phaser.Math.DegToRad(direction);
         this.scene = scene;
         this.speed = speed;

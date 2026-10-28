@@ -22,13 +22,17 @@ export class Start extends Phaser.Scene {
         this.background = this.add.sprite(640, 320, 'background');
         
         this.player = this.add.sprite(640, 600, 'alien');
+        this.physics.add.existing(this.player);
         this.enemy_group = this.add.group("enemies");
 
+        this.player.hp = 100;
+        this.player.score = 0;
         this.player.speed = 300;
         this.player.bullet_speed = 400;
         this.player.last_attack = 0;
         this.player.attack_speed = 100;
         this.player.attack_angle = 270;
+        this.score_label = this.add.text(0, 0, 'HP: ' + this.player.hp, { fontSize: '32px', fill: '#FFF' });
 
         this.last_time = 0;
         this.player_bullets = this.add.group("player_bullets");
@@ -86,7 +90,7 @@ export class Start extends Phaser.Scene {
                 "description": "Back from the dead",
                 "count": 5,
                 "speed": 100,
-                "attack_rate": 10000,
+                "attack_rate": 1500,
                 "bullet_speed": 800,
                 "damage": 3,
             }
@@ -99,9 +103,20 @@ export class Start extends Phaser.Scene {
                 const e = new Enemy(this, paths[i%2], 1280*(i%2), 30 + i*75, spawn.sprite, angle, spawn.speed, spawn.attack_rate, spawn.bullet_speed, spawn.damage, this.time.now);
                 //Phaser.Math.RotateAround(e, 0, 0, Phaser.Math.DegToRad(angle));
                 this.enemy_group.add(e);
+                this.physics.add.existing(e);
             }
         }
-        
+        this.score_label.text = "HP: " + this.player.hp + " Score: " +this.player.score;
+        this.physics.world.overlap(this.player_bullets, this.enemy_group, (b,e) => {e.destroy(true); b.destroy(true); this.player.score += 100;});
+        this.physics.world.overlap(this.player, this.enemy_bullets, (p,b) => { p.hp -= b.damage; b.destroy(true); this.checkEndGame();});
+        this.physics.world.overlap(this.player_bullets, this.enemy_bullets, (p,e) => {p.destroy(true);});
+    }
+
+    checkEndGame(){
+        if(this.player.hp <= 0){
+            this.scene.stop("Start");
+            this.scene.start("GameOver");
+        }
     }
     
 }
