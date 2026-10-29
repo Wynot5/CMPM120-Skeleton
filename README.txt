@@ -1,0 +1,5 @@
+Controls: You may move side to side with either A and D or the arrow keys. To fire, press space
+
+Scoring: Simply blast all of the enemies out of the sky (space?) to go to the next wave. Waves will get harder as you go, so try to last as long as you can
+
+Lore: This game is the third in a trilogy of gallery shooters I have made across my career as a programmer. The space bat and space bee have both been slain. But the galaxy is not yet safe, for a nefarious force has opened a time rift to the past, before the extinction of the space creatures. Through this rift armies of space bees and space bats have flooded, threatening the galaxy. But who could have orchestrated this nefarious plot? It is none other than the space bat! Long thought dead, the evil creature rose from the grave and has been biding his time for this exact moment.

@@ -26,6 +26,10 @@ export class Start extends Phaser.Scene {
         this.physics.add.existing(this.player);
         this.enemy_group = this.add.group("enemies");
         this.wave = 0;
+        this.wave_label = this.add.text(640, 100, "", {fontSize: '64px', fill: '#FFF', align: "center"});
+        this.wave_label.setOrigin(0.5, 0.5);
+        this.description_label = this.add.text(640, 180, "", {fontSize: '32px', fill: '#FFF', align: "center"});
+        this.description_label.setOrigin(0.5, 0.5);
 
         this.player.hp = 100;
         this.player.score = 0;
@@ -39,6 +43,7 @@ export class Start extends Phaser.Scene {
         this.last_time = 0;
         this.player_bullets = this.add.group("player_bullets");
         this.enemy_bullets = this.add.group("enemy_bullets");
+        this.spawn_lock = false;
 
         //this.up = this.input.keyboard.addKey("W", false, true);
         //this.down = this.input.keyboard.addKey("S", false, true);
@@ -60,21 +65,7 @@ export class Start extends Phaser.Scene {
         return paths;
     }
 
-    newWave(){
-        const spawns = this.cache.json.get("spawns");
-        console.log(spawns);
-        /* const spawns = {
-            "sprite": "bee",
-            "name": "The Space Bee",
-            "description": "Back from the dead",
-            "count": 5,
-            "speed": 100,
-            "attack_rate": 1500,
-            "bullet_speed": 800,
-            "damage": 3,
-        }*/
-        let idx = (this.wave)%2;
-        const spawn = spawns[idx];
+    newWave(spawn){
         for(let i = 0; i < spawn.count; ++i){
             //const dist = 1500 + i*500 + Math.random()*500;
             const angle = i * 360/spawn.count + Math.random()*60 - 30;
@@ -110,11 +101,17 @@ export class Start extends Phaser.Scene {
             this.player_bullets.add(bullet);
         }
 
-        if(this.enemy_group.children.entries.length == 0){
-            this.newWave();
-            this.wave++;
+        if(this.enemy_group.children.entries.length == 0 && this.spawn_lock == false){
+            this.spawn_lock = true;
+            const spawns = this.cache.json.get("spawns");
+            let idx = (this.wave)%2;
+            const spawn = spawns[idx];
+            this.wave_label.text = "Next Wave: " + spawn.name;
+            this.description_label.text = spawn.description;
+            this.time.delayedCall(5000, () => {this.wave_label.text = ""; this.description_label.text = "";});
+            this.time.delayedCall(5000, () => { this.newWave(spawn); this.wave++; this.spawn_lock = false; });
         }
-        this.score_label.text = "HP: " + this.player.hp + " Score: " +this.player.score;
+        this.score_label.text = "HP: " + this.player.hp + " Score: " +this.player.score + " Wave: " + this.wave;
         this.physics.world.overlap(this.player_bullets, this.enemy_group, (b,e) => {e.destroy(true); b.destroy(true); this.player.score += 100;});
         this.physics.world.overlap(this.player, this.enemy_bullets, (p,b) => { p.hp -= b.damage; b.destroy(true); this.checkEndGame();});
         this.physics.world.overlap(this.player_bullets, this.enemy_bullets, (p,e) => {p.destroy(true);});
